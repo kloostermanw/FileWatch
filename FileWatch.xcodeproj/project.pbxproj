@@ -11,6 +11,7 @@
 		C713B010260FA2FC001510D0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713B00F260FA2FC001510D0 /* ViewController.swift */; };
 		C713B012260FA2FD001510D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C713B011260FA2FD001510D0 /* Assets.xcassets */; };
 		C713B015260FA2FD001510D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C713B013260FA2FD001510D0 /* Main.storyboard */; };
+		C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713B01E260FB7B7001510D0 /* CustomTableCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		C713B014260FA2FD001510D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C713B016260FA2FD001510D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C713B017260FA2FD001510D0 /* FileWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileWatch.entitlements; sourceTree = "<group>"; };
+		C713B01E260FB7B7001510D0 /* CustomTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			children = (
 				C713B00D260FA2FC001510D0 /* AppDelegate.swift */,
 				C713B00F260FA2FC001510D0 /* ViewController.swift */,
+				C713B01E260FB7B7001510D0 /* CustomTableCell.swift */,
 				C713B011260FA2FD001510D0 /* Assets.xcassets */,
 				C713B013260FA2FD001510D0 /* Main.storyboard */,
 				C713B016260FA2FD001510D0 /* Info.plist */,
@@ -134,6 +137,7 @@
 			files = (
 				C713B010260FA2FC001510D0 /* ViewController.swift in Sources */,
 				C713B00E260FA2FC001510D0 /* AppDelegate.swift in Sources */,
+				C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,10 +9,13 @@ import Cocoa
 
 class CustomTableCell: NSTableCellView {
 
+    @IBOutlet weak var DirectoryLabel: NSTextField!
+    @IBOutlet weak var countLabel: NSTextField!
+    @IBOutlet weak var enableCheckBox: NSButton!
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        // Drawing code here.
+        DirectoryLabel.lineBreakMode = .byTruncatingHead
     }
-    
 }
