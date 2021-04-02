@@ -18,7 +18,10 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        arrDirectory = objUserDefaults?.value(forKey: "directory") as! [[String : String]]
+        
+        if objUserDefaults?.value(forKey: "directory") != nil {
+            arrDirectory = objUserDefaults?.value(forKey: "directory") as! [[String : String]]
+        }
     }
 
     override var representedObject: Any? {
@@ -27,7 +30,10 @@ class ViewController: NSViewController {
         }
     }
 
-
+    @IBAction func ExitNow(_ sender: Any) {
+        NSApplication.shared.terminate(self)
+    }
+    
     @IBAction func AddButton(_ sender: Any) {
         let objDirectorySelector: NSOpenPanel = NSOpenPanel()
         objDirectorySelector.canChooseDirectories = true
@@ -35,7 +41,9 @@ class ViewController: NSViewController {
         objDirectorySelector.allowsMultipleSelection = false
         
         objDirectorySelector.runModal()
-        let strChosenDir: String = objDirectorySelector.url!.absoluteString
+        var strChosenDir: String = objDirectorySelector.url!.absoluteString
+        strChosenDir = strChosenDir.replacingOccurrences(of: "file://", with: "")
+
         if (strChosenDir != "") {
             arrDirectory.append(
                 [
@@ -46,6 +54,13 @@ class ViewController: NSViewController {
             )
             objUserDefaults?.setValue(arrDirectory, forKey: "directory")
         }
+    }
+    
+    func reload() {
+        let objDmon = DirectoryMonitor.shared
+        objDmon.setPaths()
+        objDmon.stop()
+        objDmon.start()
     }
 }
 
@@ -74,6 +89,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         directoryTableView.removeRows(at: IndexSet(integer: row), withAnimation: .effectFade)
         
         objUserDefaults?.setValue(arrDirectory, forKey: "directory")
+        //reload()
     }
     
     @IBAction func checkIssue(_ sender: NSButton)
@@ -87,5 +103,6 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         }
 
         objUserDefaults?.setValue(arrDirectory, forKey: "directory")
+        //reload()
     }
 }

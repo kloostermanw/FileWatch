@@ -6,17 +6,21 @@
 //
 
 import Cocoa
+import EonilFSEvents
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
-
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.title = "☂︎"
         statusItem.button?.target =  self
         statusItem.button?.action = #selector(showSettings)
+        
+        let objDmon = DirectoryMonitor()
+        objDmon.setPaths()
+        objDmon.start()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -34,6 +38,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popoverView.behavior = .transient
         popoverView.show(relativeTo: statusItem.button!.bounds, of: statusItem.button!, preferredEdge: .maxY)
     }
-
 }
-

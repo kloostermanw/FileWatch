@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,10 @@
 		C713B012260FA2FD001510D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C713B011260FA2FD001510D0 /* Assets.xcassets */; };
 		C713B015260FA2FD001510D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C713B013260FA2FD001510D0 /* Main.storyboard */; };
 		C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713B01E260FB7B7001510D0 /* CustomTableCell.swift */; };
+		C7946DB3261117FF001FB632 /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */; };
+		C7946DB62613E572001FB632 /* FileWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB52613E572001FB632 /* FileWatch.swift */; };
+		C7D8F33E2613F5E80027726E /* EonilFSEvents in Resources */ = {isa = PBXBuildFile; fileRef = C7D8F33D2613F5E80027726E /* EonilFSEvents */; };
+		C7D8F34226151BCE0027726E /* EonilFSEvents in Frameworks */ = {isa = PBXBuildFile; productRef = C7D8F34126151BCE0027726E /* EonilFSEvents */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +27,9 @@
 		C713B016260FA2FD001510D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C713B017260FA2FD001510D0 /* FileWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileWatch.entitlements; sourceTree = "<group>"; };
 		C713B01E260FB7B7001510D0 /* CustomTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
+		C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryMonitor.swift; sourceTree = "<group>"; };
+		C7946DB52613E572001FB632 /* FileWatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatch.swift; sourceTree = "<group>"; };
+		C7D8F33D2613F5E80027726E /* EonilFSEvents */ = {isa = PBXFileReference; lastKnownFileType = folder; path = EonilFSEvents; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7D8F34226151BCE0027726E /* EonilFSEvents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +47,7 @@
 		C713B001260FA2FC001510D0 = {
 			isa = PBXGroup;
 			children = (
+				C7946DB52613E572001FB632 /* FileWatch.swift */,
 				C713B00C260FA2FC001510D0 /* FileWatch */,
 				C713B00B260FA2FC001510D0 /* Products */,
 			);
@@ -56,12 +65,14 @@
 			isa = PBXGroup;
 			children = (
 				C713B00D260FA2FC001510D0 /* AppDelegate.swift */,
+				C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */,
 				C713B00F260FA2FC001510D0 /* ViewController.swift */,
 				C713B01E260FB7B7001510D0 /* CustomTableCell.swift */,
 				C713B011260FA2FD001510D0 /* Assets.xcassets */,
 				C713B013260FA2FD001510D0 /* Main.storyboard */,
 				C713B016260FA2FD001510D0 /* Info.plist */,
 				C713B017260FA2FD001510D0 /* FileWatch.entitlements */,
+				C7D8F33D2613F5E80027726E /* EonilFSEvents */,
 			);
 			path = FileWatch;
 			sourceTree = "<group>";
@@ -82,6 +93,9 @@
 			dependencies = (
 			);
 			name = FileWatch;
+			packageProductDependencies = (
+				C7D8F34126151BCE0027726E /* EonilFSEvents */,
+			);
 			productName = FileWatch;
 			productReference = C713B00A260FA2FC001510D0 /* FileWatch.app */;
 			productType = "com.apple.product-type.application";
@@ -109,6 +123,9 @@
 				Base,
 			);
 			mainGroup = C713B001260FA2FC001510D0;
+			packageReferences = (
+				C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */,
+			);
 			productRefGroup = C713B00B260FA2FC001510D0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -124,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C713B012260FA2FD001510D0 /* Assets.xcassets in Resources */,
+				C7D8F33E2613F5E80027726E /* EonilFSEvents in Resources */,
 				C713B015260FA2FD001510D0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +155,9 @@
 			files = (
 				C713B010260FA2FC001510D0 /* ViewController.swift in Sources */,
 				C713B00E260FA2FC001510D0 /* AppDelegate.swift in Sources */,
+				C7946DB3261117FF001FB632 /* DirectoryMonitor.swift in Sources */,
 				C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */,
+				C7946DB62613E572001FB632 /* FileWatch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +354,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eonil/FSEvents";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.7;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C7D8F34126151BCE0027726E /* EonilFSEvents */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */;
+			productName = EonilFSEvents;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C713B002260FA2FC001510D0 /* Project object */;
 }
