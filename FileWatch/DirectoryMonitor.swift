@@ -10,8 +10,9 @@ import Foundation
 import EonilFSEvents
 import UserNotifications
 
-class DirectoryMonitor {
+struct DirectoryMonitor {
 
+    let k = NSObject()
     static let shared = DirectoryMonitor()
 
     let objUserDefaults = UserDefaults(suiteName: "FileWatch.kloosterman.eu")
@@ -23,26 +24,28 @@ class DirectoryMonitor {
         self.setArrDirectory()
     }
     
-    func setArrDirectory() {
+    mutating func setArrDirectory() {
         if self.objUserDefaults?.value(forKey: "directory") != nil {
             self.arrDirectory = self.objUserDefaults?.value(forKey: "directory") as! [[String : String]]
         }
     }
     
-    func setPaths() {
+    mutating func setPaths() {
         self.paths.removeAll()
         
         self.setArrDirectory()
         
         for (item) in self.arrDirectory {
-            self.paths.append(item["directory"]!)
+            if (item["enable"] == "1") {
+                self.paths.append(item["directory"]!)
+            }
         }
         
         debugPrint(self.paths)
     }
     
     func stop() {
-        EonilFSEvents.stopWatching(for: ObjectIdentifier(self))
+        EonilFSEvents.stopWatching(for: ObjectIdentifier(k))
     }
     
     func start() {
@@ -50,7 +53,7 @@ class DirectoryMonitor {
         do {
             try EonilFSEvents.startWatching(
                 paths: self.paths,
-                for: ObjectIdentifier(self),
+                for: ObjectIdentifier(k),
                 with: process)
         } catch {
             print(error)
@@ -70,19 +73,22 @@ class DirectoryMonitor {
         
         if (e.flag?.contains(EonilFSEventsEventFlags.itemCreated))!{
             print_string+=" CREATE!"
+            let string:String = "\(e.path) is created."
+            showNotification(string)
         }
         else if (e.flag?.contains(EonilFSEventsEventFlags.itemRenamed))!{
             print_string+=" RENAMED!"
         }
         else if (e.flag?.contains(EonilFSEventsEventFlags.itemModified))!{
             print_string+=" MODIFIED!"
+            let string:String = "\(e.path) is modified."
+            showNotification(string)
         }
         else if (e.flag?.contains(EonilFSEventsEventFlags.itemRemoved))!{
             print_string+=" REMOVED!"
         }
         
         print(print_string)
-        showNotification(print_string)
     }
     
     
@@ -97,27 +103,20 @@ class DirectoryMonitor {
             }
         }
         
-        // Step 2.
+        // Step 2. content
         let content = UNMutableNotificationContent()
-        content.title = "Change"
+        //content.title = "Change"
         content.body = line
+        content.sound = UNNotificationSound.default
         
-        // Step 3.
-        var dateComponents = DateComponents()
-        dateComponents.hour = 13
-        dateComponents.minute = 54
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        // Step 3. trigger
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
 
-        
-        
-        // Step 4.
+        // Step 4. request
         let strUuid = UUID().uuidString
-        
         let request = UNNotificationRequest(identifier: strUuid, content: content, trigger: trigger)
         
-        
-        // Step 5.
+        // Step 5. add
         nc.add(request) { (error) in
             // Check error
         }

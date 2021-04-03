@@ -57,7 +57,7 @@ class ViewController: NSViewController {
     }
     
     func reload() {
-        let objDmon = DirectoryMonitor.shared
+        var objDmon = DirectoryMonitor.shared
         objDmon.setPaths()
         objDmon.stop()
         objDmon.start()
@@ -89,7 +89,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         directoryTableView.removeRows(at: IndexSet(integer: row), withAnimation: .effectFade)
         
         objUserDefaults?.setValue(arrDirectory, forKey: "directory")
-        //reload()
+        reload()
     }
     
     @IBAction func checkIssue(_ sender: NSButton)
@@ -103,6 +103,6 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         }
 
         objUserDefaults?.setValue(arrDirectory, forKey: "directory")
-        //reload()
+        reload()
     }
 }
