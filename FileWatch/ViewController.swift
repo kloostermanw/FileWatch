@@ -49,7 +49,7 @@ class ViewController: NSViewController {
                 [
                     "directory":strChosenDir,
                     "count":"0",
-                    "enable":"0"
+                    "enable":"1"
                 ]
             )
             objUserDefaults?.setValue(arrDirectory, forKey: "directory")

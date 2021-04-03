@@ -23,8 +23,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         resizedLogo.isTemplate = true
         
         statusItem.button?.image = resizedLogo
-        statusItem.button?.target = self
-        statusItem.button?.action = #selector(showSettings)
+        //statusItem.button?.target = self
+        //statusItem.button?.action = #selector(showSettings)
+        
+        
+        let statusBarMenu = NSMenu(title: "Cap Status Bar Menu")
+        statusItem.menu = statusBarMenu
+        
+        statusBarMenu.addItem(
+            withTitle: "Settings",
+            action: #selector(showSettings),
+            keyEquivalent: "")
+        
+        statusBarMenu.addItem(
+            withTitle: "Stop application",
+            action: #selector(exit),
+            keyEquivalent: "")
         
         var objDmon = DirectoryMonitor.shared
         objDmon.setPaths()
@@ -33,6 +47,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    @objc func exit() {
+        NSApplication.shared.terminate(self)
     }
 
     @objc func showSettings() {
