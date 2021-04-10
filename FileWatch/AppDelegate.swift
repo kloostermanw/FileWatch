@@ -31,6 +31,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = statusBarMenu
         
         statusBarMenu.addItem(
+            withTitle: "Latest message",
+            action: #selector(showMessage),
+            keyEquivalent: "")
+        
+        statusBarMenu.addItem(
             withTitle: "Settings",
             action: #selector(showSettings),
             keyEquivalent: "")
@@ -54,6 +59,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func showSettings() {
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyboard.instantiateController(withIdentifier: "ViewController") as? ViewController else {
+            fatalError("Unable to find ViewController.")
+        }
+        
+        let popoverView = NSPopover()
+        popoverView.contentViewController = vc
+        popoverView.behavior = .transient
+        popoverView.show(relativeTo: statusItem.button!.bounds, of: statusItem.button!, preferredEdge: .maxY)
+    }
+    
+    @objc func showMessage() {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateController(withIdentifier: "ViewController") as? ViewController else {
             fatalError("Unable to find ViewController.")

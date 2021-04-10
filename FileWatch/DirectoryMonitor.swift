@@ -81,14 +81,15 @@ struct DirectoryMonitor {
         }
         else if (e.flag?.contains(EonilFSEventsEventFlags.itemModified))!{
             print_string+=" MODIFIED!"
-            let string:String = "\(e.path) is modified."
+            let strOutput = readFile(e.path)
+            let string:String = "\(e.path) is modified.\n \(strOutput)"
             showNotification(string)
         }
         else if (e.flag?.contains(EonilFSEventsEventFlags.itemRemoved))!{
             print_string+=" REMOVED!"
         }
         
-        print(print_string)
+//        print(print_string)
     }
     
     
@@ -120,5 +121,39 @@ struct DirectoryMonitor {
         nc.add(request) { (error) in
             // Check error
         }
+    }
+    
+    func readFile(_ file: String) -> String {
+        var strReturn: String = ""
+        let fileURL = URL(fileURLWithPath: file)
+        
+        do {
+            let savedData = try Data(contentsOf: fileURL)
+            
+            if let savedString = String(data: savedData, encoding: .utf8) {
+                let myStrings = savedString.components(separatedBy: .newlines)
+                for strLine in myStrings.reversed() {
+                    
+                    let regex = try NSRegularExpression(pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}")
+                    if regex.matches(strLine) {
+                        strReturn = strLine
+                        
+                        break
+                    }
+                }
+            }
+            
+        } catch {
+            print(error)
+        }
+        
+        return strReturn
+    }
+}
+
+extension NSRegularExpression {
+    func matches(_ string: String) -> Bool {
+        let range = NSRange(location: 0, length: string.utf16.count)
+        return firstMatch(in: string, options: [], range: range) != nil
     }
 }
