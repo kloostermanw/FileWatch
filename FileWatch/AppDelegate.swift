@@ -23,10 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         resizedLogo.isTemplate = true
         
         statusItem.button?.image = resizedLogo
-        //statusItem.button?.target = self
-        //statusItem.button?.action = #selector(showSettings)
-        
-        
+
         let statusBarMenu = NSMenu(title: "Cap Status Bar Menu")
         statusItem.menu = statusBarMenu
         
@@ -72,10 +69,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func showMessage() {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateController(withIdentifier: "ViewController") as? ViewController else {
-            fatalError("Unable to find ViewController.")
-        }
-        
+        guard let vc = storyboard.instantiateController(withIdentifier: .init(stringLiteral: "messageID")) as? MessageViewController else { return }
+
         let popoverView = NSPopover()
         popoverView.contentViewController = vc
         popoverView.behavior = .transient

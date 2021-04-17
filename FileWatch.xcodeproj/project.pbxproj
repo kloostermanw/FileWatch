@@ -14,6 +14,7 @@
 		C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713B01E260FB7B7001510D0 /* CustomTableCell.swift */; };
 		C7946DB3261117FF001FB632 /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */; };
 		C7946DB62613E572001FB632 /* FileWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB52613E572001FB632 /* FileWatch.swift */; };
+		C7ABF38026225E5300F71C40 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ABF37E26225E5300F71C40 /* MessageViewController.swift */; };
 		C7D8F33E2613F5E80027726E /* EonilFSEvents in Resources */ = {isa = PBXBuildFile; fileRef = C7D8F33D2613F5E80027726E /* EonilFSEvents */; };
 		C7D8F34226151BCE0027726E /* EonilFSEvents in Frameworks */ = {isa = PBXBuildFile; productRef = C7D8F34126151BCE0027726E /* EonilFSEvents */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,7 @@
 		C713B01E260FB7B7001510D0 /* CustomTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
 		C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryMonitor.swift; sourceTree = "<group>"; };
 		C7946DB52613E572001FB632 /* FileWatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatch.swift; sourceTree = "<group>"; };
+		C7ABF37E26225E5300F71C40 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		C7D8F33D2613F5E80027726E /* EonilFSEvents */ = {isa = PBXFileReference; lastKnownFileType = folder; path = EonilFSEvents; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,6 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				C713B00D260FA2FC001510D0 /* AppDelegate.swift */,
+				C7ABF37E26225E5300F71C40 /* MessageViewController.swift */,
 				C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */,
 				C713B00F260FA2FC001510D0 /* ViewController.swift */,
 				C713B01E260FB7B7001510D0 /* CustomTableCell.swift */,
@@ -157,6 +160,7 @@
 				C713B00E260FA2FC001510D0 /* AppDelegate.swift in Sources */,
 				C7946DB3261117FF001FB632 /* DirectoryMonitor.swift in Sources */,
 				C713B01F260FB7B7001510D0 /* CustomTableCell.swift in Sources */,
+				C7ABF38026225E5300F71C40 /* MessageViewController.swift in Sources */,
 				C7946DB62613E572001FB632 /* FileWatch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -298,6 +302,7 @@
 				CODE_SIGN_ENTITLEMENTS = FileWatch/FileWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = FP5KVVVJLP;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FileWatch/Info.plist;
@@ -319,6 +324,7 @@
 				CODE_SIGN_ENTITLEMENTS = FileWatch/FileWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = FP5KVVVJLP;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FileWatch/Info.plist;

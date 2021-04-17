@@ -44,6 +44,11 @@ struct DirectoryMonitor {
         debugPrint(self.paths)
     }
     
+    func saveLastMessage(_ array: [String]) {
+        let objUserDefaults = UserDefaults(suiteName: "FileWatch.kloosterman.eu")
+        objUserDefaults?.setValue(array, forKey: "lastMessage")
+    }
+    
     func stop() {
         EonilFSEvents.stopWatching(for: ObjectIdentifier(k))
     }
@@ -126,6 +131,7 @@ struct DirectoryMonitor {
     func readFile(_ file: String) -> String {
         var strReturn: String = ""
         let fileURL = URL(fileURLWithPath: file)
+        var arrLastMessage: [String] = []
         
         do {
             let savedData = try Data(contentsOf: fileURL)
@@ -133,10 +139,11 @@ struct DirectoryMonitor {
             if let savedString = String(data: savedData, encoding: .utf8) {
                 let myStrings = savedString.components(separatedBy: .newlines)
                 for strLine in myStrings.reversed() {
-                    
+                    arrLastMessage.append(strLine)
                     let regex = try NSRegularExpression(pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}")
                     if regex.matches(strLine) {
                         strReturn = strLine
+                        saveLastMessage(arrLastMessage.reversed())
                         
                         break
                     }
