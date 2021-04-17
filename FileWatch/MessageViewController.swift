@@ -7,12 +7,13 @@
 
 import Cocoa
 
-class MessageViewController: NSViewController {
+class MessageViewController: NSViewController, NSTextViewDelegate {
     
     @IBOutlet var messageTextView: NSTextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        messageTextView.delegate = self
         
         messageTextView.string = "no Content."
         
@@ -38,27 +39,17 @@ class MessageViewController: NSViewController {
 
         var regex = try? NSRegularExpression(pattern: "(\\/[a-zA-Z\\/]+\\.php)[\\(\\:]([0-9]+)\\)")
         var matches = (regex?.matches(in: strLine, options: [], range: range))!
+        
         for match in matches {
-//            print(match.numberOfRanges)
-//            print(match.range(at: 0))
-//            print(getRangeFromString(string: strLine, range: match.range(at: 0)))
-//            print(match.range(at: 1))
-//            print(getRangeFromString(string: strLine, range: match.range(at: 1)))
-//            print(match.range(at: 2))
-//            print(getRangeFromString(string: strLine, range: match.range(at: 2)))
-            
             attrString.addAttribute(.foregroundColor, value: NSColor.systemRed, range: match.range(at: 1))
             
-//            var line = getRangeFromString(string: strLine, range: match.range(at: 2))
-//            let path = getRangeFromString(string: strLine, range: match.range(at: 1))
+            let line = getRangeFromString(string: strLine, range: match.range(at: 2))
+            let path = getRangeFromString(string: strLine, range: match.range(at: 1))
             
-//            let cmd = "phpstorm --line " + line + " " + path
-//            //let cmd = "phpstorm --line 167 ~/repos/api.dawi.dev/src/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php"
-//            print(cmd)
-//
-//            attrString.addAttribute(.link, value: cmd, range: match.range(at: 1))
+            let cmd = "phpstorm --line " + line + " " + path
+            
+            attrString.addAttribute(NSAttributedString.Key.link, value: cmd, range: match.range(at: 1))
         }
-        
         
         regex = try? NSRegularExpression(pattern: "\\[stacktrace\\]")
         matches = (regex?.matches(in: strLine, options: [], range: range))!
@@ -74,7 +65,6 @@ class MessageViewController: NSViewController {
         return attrString
     }
     
-    
     func getRangeFromString(string: String, range: NSRange) -> String {
         var strReturn: String = ""
         
@@ -83,5 +73,13 @@ class MessageViewController: NSViewController {
         }
         
         return strReturn
+    }
+    
+    func textView(_ textView: NSTextView, clickedOnLink link: Any, at charIndex: Int) -> Bool {
+        print(link)
+        
+        
+        
+        return true
     }
 }
