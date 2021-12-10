@@ -44,9 +44,10 @@ struct DirectoryMonitor {
         debugPrint(self.paths)
     }
     
-    func saveLastMessage(_ array: [String]) {
+    func saveLastMessage(_ array: [String], filePath:String) {
         let objUserDefaults = UserDefaults(suiteName: "FileWatch.kloosterman.eu")
         objUserDefaults?.setValue(array, forKey: "lastMessage")
+        objUserDefaults?.setValue(filePath, forKey: "lastFilePath")
     }
     
     func stop() {
@@ -143,7 +144,7 @@ struct DirectoryMonitor {
                     let regex = try NSRegularExpression(pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}")
                     if regex.matches(strLine) {
                         strReturn = strLine
-                        saveLastMessage(arrLastMessage.reversed())
+                        saveLastMessage(arrLastMessage.reversed(), filePath:fileURL.path)
                         
                         break
                     }

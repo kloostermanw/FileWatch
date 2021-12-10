@@ -10,9 +10,14 @@ import Cocoa
 class ViewController: NSViewController {
 
     let objUserDefaults = UserDefaults(suiteName: "FileWatch.kloosterman.eu")
-    var arrDirectory: [[String : String]] = [["directory":"/tmp", "count":"0", "enable":"1"]]
+    var arrDirectory: [[String : String]] = [["directory":"/tmp", "count":"0", "enable":"1", "local":"/", "remote":"/"]]
+    
+    var selectedRow = 0
     
     @IBOutlet weak var directoryTableView: NSTableView!
+    @IBOutlet weak var local: NSTextFieldCell!
+    @IBOutlet weak var remote: NSTextFieldCell!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,11 +54,20 @@ class ViewController: NSViewController {
                 [
                     "directory":strChosenDir,
                     "count":"0",
-                    "enable":"1"
+                    "enable":"1",
+                    "local":"/",
+                    "remote":"/"
                 ]
             )
             objUserDefaults?.setValue(arrDirectory, forKey: "directory")
         }
+    }
+    
+    @IBAction func SaveMapping(_ sender: Any) {
+        arrDirectory[selectedRow]["local"] = local.title
+        arrDirectory[selectedRow]["remote"] = remote.title
+        
+        objUserDefaults?.setValue(arrDirectory, forKey: "directory")
     }
     
     func reload() {
@@ -67,6 +81,13 @@ class ViewController: NSViewController {
 extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
         return arrDirectory.count
+    }
+    
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        let table = notification.object as! NSTableView
+        selectedRow = table.selectedRow;
+        local.title = arrDirectory[selectedRow]["local"] ?? "local"
+        remote.title = arrDirectory[selectedRow]["remote"] ?? "remote"
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
