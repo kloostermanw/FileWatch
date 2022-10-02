@@ -36,8 +36,11 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         
         let intArrIndex = self.find(value: modPath, in: arrDirectory);
         
-        local = arrDirectory[intArrIndex]["local"] ?? "/"
-        remote = arrDirectory[intArrIndex]["remote"] ?? "/"
+        
+        if intArrIndex >= 0 && intArrIndex < arrDirectory.count {
+            self.local = arrDirectory[intArrIndex]["local"] ?? "/"
+            self.remote = arrDirectory[intArrIndex]["remote"] ?? "/"
+        }
                 
         if objUserDefaults?.value(forKey: "lastMessage") != nil {
             let arrMessage = objUserDefaults?.value(forKey: "lastMessage") as! [String]
@@ -48,9 +51,15 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
     
     func find(value searchValue: String, in array: [[String : String]]) -> Int
     {
+        
         for (index, value) in array.enumerated() {
-            if value["directory"] == searchValue {
-                return index
+            
+            for item in value {
+                if (item.key == "directory") {
+                    if (searchValue.starts(with: item.value)) {
+                        return index;
+                    }
+                };
             }
         }
 
@@ -68,7 +77,7 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         
         //attrString.addAttribute(.font, value: NSFont.systemFont(ofSize: 8), range: NSRange(location: 0, length: 10))
 
-        var regex = try? NSRegularExpression(pattern: "(\\/[a-zA-Z\\/]+\\.php)[\\(\\:]([0-9]+)\\)")
+        var regex = try? NSRegularExpression(pattern: "(\\/[a-zA-Z0-9\\/]+\\.php)[\\(\\:]([0-9]+)\\)")
         var matches = (regex?.matches(in: strLine, options: [], range: range))!
         
         for match in matches {
