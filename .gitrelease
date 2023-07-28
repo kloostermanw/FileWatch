@@ -1,0 +1,31 @@
+[DEFAULT]
+verbose = false
+source = develop
+target = master
+
+# cmd1 that runs after the release is created
+# cmd1 = none | vendor/bin/readmegen
+cmd1 = none
+
+# cmd1_arguments belong by cmd1
+# cmd1_arguments = none | --from {current_release} --release {new_release}
+cmd1_arguments = --from {current_release} --release {new_release}
+
+# Specify the editor of choice, this will open the editor after the release is created and the cmd1 has run
+# editor vim | nano | none
+editor = none
+
+# The edit will load the following file
+# and this file will commited in the release branch
+# filename = none | CHANGELOG.md
+filename = none
+
+# file_commit_message
+file_commit_message = none
+
+# cmd2 that runs after release is pushed to origin
+cmd2 = none
+
+# cmd2_arguments belong by cmd2
+# cmd2_arguments = none | --from {current_release} --release {new_release}
+cmd2_arguments = none
