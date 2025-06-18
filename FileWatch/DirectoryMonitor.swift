@@ -48,6 +48,18 @@ struct DirectoryMonitor {
         let objUserDefaults = UserDefaults(suiteName: "FileWatch.kloosterman.eu")
         objUserDefaults?.setValue(array, forKey: "lastMessage")
         objUserDefaults?.setValue(filePath, forKey: "lastFilePath")
+        
+        // Add to message history
+        var messageHistory: [[String]] = []
+        if objUserDefaults?.value(forKey: "messageHistory") != nil {
+            messageHistory = objUserDefaults?.value(forKey: "messageHistory") as! [[String]]
+        }
+        
+        // Add message to history if it's not already there
+        if !messageHistory.contains(array) {
+            messageHistory.append(array)
+            objUserDefaults?.setValue(messageHistory, forKey: "messageHistory")
+        }
     }
     
     func stop() {

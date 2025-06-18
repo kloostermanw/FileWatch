@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -718,7 +718,7 @@
                                                             <rect key="frame" x="8" y="0.0" width="331" height="24"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BVA-yd-QpP">
+                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BVA-yd-QpP">
                                                                     <rect key="frame" x="23" y="4" width="93" height="16"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="sgS-2o-R0P"/>
@@ -729,7 +729,7 @@
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                 </textField>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OcP-gW-Dtq">
+                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OcP-gW-Dtq">
                                                                     <rect key="frame" x="219" y="4" width="74" height="16"/>
                                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="CountLabel" id="KRD-2s-D5G">
                                                                         <font key="font" metaFont="system"/>
@@ -739,27 +739,27 @@
                                                                 </textField>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EeX-nM-Upx">
                                                                     <rect key="frame" x="301" y="5" width="20" height="17"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="width" constant="20" id="6hB-5M-emI"/>
-                                                                    </constraints>
                                                                     <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="trash" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="GIx-2u-VaC">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="20" id="6hB-5M-emI"/>
+                                                                    </constraints>
                                                                     <connections>
                                                                         <action selector="delIssue:" target="XfG-lQ-9wD" id="ElC-vS-dW0"/>
                                                                     </connections>
                                                                 </button>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Y4E-Bk-o1S">
                                                                     <rect key="frame" x="-1" y="3" width="18" height="18"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="height" constant="14" id="JZD-p1-KLk"/>
-                                                                        <constraint firstAttribute="width" constant="14" id="WPf-qD-KmB"/>
-                                                                    </constraints>
                                                                     <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cum-pG-FDP">
                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="14" id="JZD-p1-KLk"/>
+                                                                        <constraint firstAttribute="width" constant="14" id="WPf-qD-KmB"/>
+                                                                    </constraints>
                                                                     <connections>
                                                                         <action selector="checkIssue:" target="XfG-lQ-9wD" id="Dq8-ad-d0h"/>
                                                                     </connections>
@@ -815,7 +815,7 @@
                                     <action selector="AddButton:" target="XfG-lQ-9wD" id="UHx-c2-Wv2"/>
                                 </connections>
                             </button>
-                            <textField verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ky9-YO-GOD">
+                            <textField focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ky9-YO-GOD">
                                 <rect key="frame" x="10" y="71" width="264" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="local" placeholderString="local" drawsBackground="YES" id="6s8-us-iu0">
                                     <font key="font" metaFont="system"/>
@@ -823,7 +823,7 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BOn-X5-OvH">
+                            <textField focusRingType="none" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BOn-X5-OvH">
                                 <rect key="frame" x="10" y="20" width="264" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="remote" placeholderString="remote" drawsBackground="YES" id="chx-5r-g0x">
                                     <font key="font" metaFont="system"/>
@@ -841,7 +841,7 @@
                                     <action selector="SaveMapping:" target="XfG-lQ-9wD" id="8b0-FK-5Wf"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7mS-ch-wMo">
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7mS-ch-wMo">
                                 <rect key="frame" x="10" y="43" width="47" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="remote" id="Erb-T1-Uys">
                                     <font key="font" metaFont="system"/>
@@ -849,7 +849,7 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9hR-x7-TBy">
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9hR-x7-TBy">
                                 <rect key="frame" x="10" y="94" width="33" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="local" id="P1H-O9-4Ze">
                                     <font key="font" metaFont="system"/>
