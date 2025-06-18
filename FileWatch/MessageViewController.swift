@@ -40,6 +40,7 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         pinButton.bezelStyle = .rounded
         pinButton.setButtonType(.toggle)
         pinButton.state = .off
+        pinButton.contentTintColor = NSColor.controlTextColor
         pinButton.target = self
         pinButton.action = #selector(togglePin(_:))
         pinButton.translatesAutoresizingMaskIntoConstraints = false
@@ -179,6 +180,15 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
     
     @objc func togglePin(_ sender: NSButton) {
         isPinned = sender.state == .on
+        
+        // Update button appearance based on state
+        if isPinned {
+            pinButton.contentTintColor = NSColor.systemBlue
+            pinButton.title = "Unpin"
+        } else {
+            pinButton.contentTintColor = NSColor.controlTextColor
+            pinButton.title = "Pin"
+        }
         
         // Get the popover that contains this view controller
         if let popover = self.view.window?.value(forKey: "popover") as? NSPopover {

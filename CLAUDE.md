@@ -7,6 +7,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run: `xcodebuild -project FileWatch.xcodeproj -scheme FileWatch run`
 - Clean: `xcodebuild -project FileWatch.xcodeproj -scheme FileWatch clean`
 
+## Architecture Overview
+This is a macOS file monitoring application that watches directories for changes and sends notifications:
+
+- **FileWatch.swift**: Core FSEvent wrapper class providing Swift-friendly interface to macOS FSEvents
+- **DirectoryMonitor.swift**: Singleton managing file system monitoring using EonilFSEvents library
+- **ViewController.swift**: Main UI controller for directory management (add/remove/configure watched paths)
+- **MessageViewController.swift**: UI for displaying file change notifications and history
+- **CustomTableCell.swift**: Custom table cell for directory list display
+- **EonilFSEvents/**: Third-party library providing FSEvents Swift wrapper
+
+## Key Components
+- **Data Persistence**: Uses UserDefaults with suite name "FileWatch.kloosterman.eu"
+- **Directory Monitoring**: FSEvents-based real-time file system monitoring
+- **Notifications**: macOS UserNotifications framework for file change alerts
+- **UI Pattern**: Cocoa AppKit with storyboard-based interface
+
 ## Code Style Guidelines
 - **Imports**: Import specific frameworks only (Foundation, Cocoa, EonilFSEvents)
 - **Formatting**: Use 4-space indentation, no trailing whitespace
