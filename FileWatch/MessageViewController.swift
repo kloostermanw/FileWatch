@@ -7,6 +7,36 @@
 
 import Cocoa
 
+// Custom resize handle view
+class ResizeHandleView: NSView {
+    weak var parentViewController: MessageViewController?
+    
+    override func mouseEntered(with event: NSEvent) {
+        NSCursor.crosshair.set()
+    }
+    
+    override func mouseExited(with event: NSEvent) {
+        NSCursor.arrow.set()
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        parentViewController?.startResize(with: event)
+    }
+    
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        
+        // Remove existing tracking areas
+        for trackingArea in trackingAreas {
+            removeTrackingArea(trackingArea)
+        }
+        
+        // Add new tracking area
+        let trackingArea = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeAlways], owner: self, userInfo: nil)
+        addTrackingArea(trackingArea)
+    }
+}
+
 class MessageViewController: NSViewController, NSTextViewDelegate {
     
     @IBOutlet var messageTextView: NSTextView!
@@ -18,15 +48,20 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
     private var currentMessageIndex: Int = 0
     private var isPinned: Bool = false
     
+    // Popover reference for resizing
+    weak var popover: NSPopover?
+    
     // UI Controls
     private var pinButton: NSButton!
     private var prevButton: NSButton!
     private var nextButton: NSButton!
     private var controlsView: NSView!
+    private var resizeHandle: ResizeHandleView!
     
     override func loadView() {
         // Create a completely new view structure
         let contentView = NSView(frame: NSRect(x: 0, y: 0, width: 450, height: 300))
+        contentView.wantsLayer = true
         
         // Create the control view
         controlsView = NSView(frame: NSRect(x: 0, y: contentView.frame.height - 40, width: contentView.frame.width, height: 40))
@@ -59,6 +94,14 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         nextButton.action = #selector(showNextMessage(_:))
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         
+        // Create resize handle
+        resizeHandle = ResizeHandleView(frame: NSRect(x: contentView.frame.width - 20, y: 0, width: 20, height: 20))
+        resizeHandle.wantsLayer = true
+        resizeHandle.layer?.backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.3).cgColor
+        resizeHandle.layer?.cornerRadius = 3
+        resizeHandle.translatesAutoresizingMaskIntoConstraints = false
+        resizeHandle.parentViewController = self
+        
         // Create a scroll view for the text
         let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height - 40))
         scrollView.hasVerticalScroller = true
@@ -86,9 +129,10 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         controlsView.addSubview(prevButton)
         controlsView.addSubview(nextButton)
         
-        // Add the scroll view and control view to the content view
+        // Add the scroll view, control view, and resize handle to the content view
         contentView.addSubview(scrollView)
         contentView.addSubview(controlsView)
+        contentView.addSubview(resizeHandle)
         
         // Set up constraints for the control view
         NSLayoutConstraint.activate([
@@ -113,6 +157,14 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
             scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        
+        // Set up constraints for the resize handle
+        NSLayoutConstraint.activate([
+            resizeHandle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            resizeHandle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            resizeHandle.widthAnchor.constraint(equalToConstant: 20),
+            resizeHandle.heightAnchor.constraint(equalToConstant: 20)
         ])
         
         self.view = contentView
@@ -190,8 +242,8 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
             pinButton.title = "Pin"
         }
         
-        // Get the popover that contains this view controller
-        if let popover = self.view.window?.value(forKey: "popover") as? NSPopover {
+        // Update popover behavior
+        if let popover = self.popover {
             popover.behavior = isPinned ? .applicationDefined : .transient
         }
     }
@@ -331,5 +383,42 @@ class MessageViewController: NSViewController, NSTextViewDelegate {
         print("terminal output: \(ds!)")
 
         print("execution complete...")
+    }
+    
+    // MARK: - Resize Functionality
+    
+    func startResize(with event: NSEvent) {
+        guard let window = self.view.window,
+              let popover = self.popover else { return }
+        
+        let initialSize = popover.contentSize
+        let initialLocation = event.locationInWindow
+        
+        // Track mouse dragging
+        var shouldContinue = true
+        while shouldContinue {
+            let nextEvent = window.nextEvent(matching: [.leftMouseDragged, .leftMouseUp])
+            
+            switch nextEvent?.type {
+            case .leftMouseDragged:
+                if let dragEvent = nextEvent {
+                    let currentLocation = dragEvent.locationInWindow
+                    let deltaX = currentLocation.x - initialLocation.x
+                    let deltaY = initialLocation.y - currentLocation.y // Inverted for popover coordinate system
+                    
+                    let newWidth = max(300, initialSize.width + deltaX)
+                    let newHeight = max(200, initialSize.height + deltaY)
+                    
+                    let newSize = NSSize(width: newWidth, height: newHeight)
+                    popover.contentSize = newSize
+                }
+            case .leftMouseUp:
+                shouldContinue = false
+            default:
+                break
+            }
+        }
+        
+        NSCursor.arrow.set()
     }
 }

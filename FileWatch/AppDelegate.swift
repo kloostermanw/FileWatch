@@ -74,6 +74,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let popoverView = NSPopover()
         popoverView.contentViewController = vc
         popoverView.behavior = .transient
+        popoverView.contentSize = NSSize(width: 450, height: 300)
+        
+        // Store reference to popover in the view controller for resize functionality
+        vc.popover = popoverView
+        
         popoverView.show(relativeTo: statusItem.button!.bounds, of: statusItem.button!, preferredEdge: .maxY)
     }
 }
