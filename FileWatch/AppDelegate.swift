@@ -9,9 +9,11 @@ import Cocoa
 import EonilFSEvents
 
 @main
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let updates = UpdateController()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         guard let logo = NSImage(named: NSImage.Name("search-plus-solid")) else { return }
@@ -36,15 +38,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             withTitle: "Settings",
             action: #selector(showSettings),
             keyEquivalent: "")
-        
+
+        statusBarMenu.addItem(
+            withTitle: "Check for Updates…",
+            action: #selector(checkForUpdates),
+            keyEquivalent: "")
+
         statusBarMenu.addItem(
             withTitle: "Stop application",
             action: #selector(exit),
             keyEquivalent: "")
-        
+
         var objDmon = DirectoryMonitor.shared
         objDmon.setPaths()
         objDmon.start()
+
+        updates.start()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -53,6 +62,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func exit() {
         NSApplication.shared.terminate(self)
+    }
+
+    @objc func checkForUpdates() {
+        updates.checkForUpdates()
     }
 
     @objc func showSettings() {
