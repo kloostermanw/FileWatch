@@ -15,7 +15,7 @@ This is a macOS file monitoring application that watches directories for changes
 - **ViewController.swift**: Main UI controller for directory management (add/remove/configure watched paths)
 - **MessageViewController.swift**: UI for displaying file change notifications and history
 - **CustomTableCell.swift**: Custom table cell for directory list display
-- **EonilFSEvents/**: Third-party library providing FSEvents Swift wrapper
+- **Packages/EonilFSEvents/**: Local Swift package vendoring EonilFSEvents 0.1.7 (upstream github.com/eonil/FSEvents was deleted); referenced as a local package, not a remote dependency
 
 ## Key Components
 - **Data Persistence**: Uses UserDefaults with suite name "FileWatch.kloosterman.eu"

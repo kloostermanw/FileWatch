@@ -23,7 +23,6 @@
 		C7946DB3261117FF001FB632 /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */; };
 		C7946DB62613E572001FB632 /* FileWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7946DB52613E572001FB632 /* FileWatch.swift */; };
 		C7ABF38026225E5300F71C40 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ABF37E26225E5300F71C40 /* MessageViewController.swift */; };
-		C7D8F33E2613F5E80027726E /* EonilFSEvents in Resources */ = {isa = PBXBuildFile; fileRef = C7D8F33D2613F5E80027726E /* EonilFSEvents */; };
 		C7D8F34226151BCE0027726E /* EonilFSEvents in Frameworks */ = {isa = PBXBuildFile; productRef = C7D8F34126151BCE0027726E /* EonilFSEvents */; };
 		E1B4DEFADBDC0A943EFE95A5 /* UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A685B66FD9563C0E6F6BD75 /* UpdateController.swift */; };
 		E7F00AB5A28C72272399DDF1 /* UpdateServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5843E8F5FB7278CB092A4545 /* UpdateServiceTests.swift */; };
@@ -59,7 +58,6 @@
 		C7946DB2261117FF001FB632 /* DirectoryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryMonitor.swift; sourceTree = "<group>"; };
 		C7946DB52613E572001FB632 /* FileWatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatch.swift; sourceTree = "<group>"; };
 		C7ABF37E26225E5300F71C40 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
-		C7D8F33D2613F5E80027726E /* EonilFSEvents */ = {isa = PBXFileReference; lastKnownFileType = folder; path = EonilFSEvents; sourceTree = "<group>"; };
 		D76B8AB4B2352EEFE0C5362D /* FileWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FileWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F985D00E5375CA7F67F508D8 /* AppVersionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		FA2BDC1CEABF93DE10EEB770 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
@@ -100,7 +98,6 @@
 				BCAF6DCADED36BECEAB690A2 /* GitHubReleaseTests.swift */,
 				5843E8F5FB7278CB092A4545 /* UpdateServiceTests.swift */,
 			);
-			name = FileWatchTests;
 			path = FileWatchTests;
 			sourceTree = "<group>";
 		};
@@ -136,7 +133,6 @@
 				C713B013260FA2FD001510D0 /* Main.storyboard */,
 				C713B016260FA2FD001510D0 /* Info.plist */,
 				C713B017260FA2FD001510D0 /* FileWatch.entitlements */,
-				C7D8F33D2613F5E80027726E /* EonilFSEvents */,
 				47005B5C66AAA2BD505E8330 /* AppVersion.swift */,
 				4102973AD51C81BD8C2187EF /* GitHubRelease.swift */,
 				8441AD96C999AF6252A37A7E /* ReleaseChecking.swift */,
@@ -220,7 +216,7 @@
 			);
 			mainGroup = C713B001260FA2FC001510D0;
 			packageReferences = (
-				C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */,
+				C7D8F34026151BCE0027726E /* XCLocalSwiftPackageReference "Packages/EonilFSEvents" */,
 			);
 			productRefGroup = C713B00B260FA2FC001510D0 /* Products */;
 			projectDirPath = "";
@@ -238,7 +234,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C713B012260FA2FD001510D0 /* Assets.xcassets in Resources */,
-				C7D8F33E2613F5E80027726E /* EonilFSEvents in Resources */,
 				C713B015260FA2FD001510D0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -470,6 +465,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FileWatch/FileWatch.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 4;
@@ -543,21 +539,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eonil/FSEvents";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.7;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		C7D8F34026151BCE0027726E /* XCLocalSwiftPackageReference "Packages/EonilFSEvents" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/EonilFSEvents;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		C7D8F34126151BCE0027726E /* EonilFSEvents */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C7D8F34026151BCE0027726E /* XCRemoteSwiftPackageReference "FSEvents" */;
+			package = C7D8F34026151BCE0027726E /* XCLocalSwiftPackageReference "Packages/EonilFSEvents" */;
 			productName = EonilFSEvents;
 		};
 /* End XCSwiftPackageProductDependency section */
