@@ -77,9 +77,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let popoverView = NSPopover()
         popoverView.contentViewController = vc
         popoverView.behavior = .transient
+        vc.popover = popoverView
         popoverView.show(relativeTo: statusItem.button!.bounds, of: statusItem.button!, preferredEdge: .maxY)
     }
-    
+
     @objc func showMessage() {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         guard let vc = storyboard.instantiateController(withIdentifier: .init(stringLiteral: "messageID")) as? MessageViewController else { return }
