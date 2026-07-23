@@ -23,6 +23,18 @@ This is a macOS file monitoring application that watches directories for changes
 - **Notifications**: macOS UserNotifications framework for file change alerts
 - **UI Pattern**: Cocoa AppKit with storyboard-based interface
 
+## Documentation — keep it in sync
+The `documentation/` folder documents how the app works and how its UI elements
+are named. **Whenever you change the application, update the documentation in the
+same change** so it never drifts from the code.
+
+- `documentation/AsciiScreens/`: one Markdown file per screen/view, with an ASCII
+  rendering and the backing symbol names (classes, `@IBOutlet`s, actions,
+  storyboard identifiers, UserDefaults keys). See its `README.md` for the index.
+- When you add, rename, remove, or restyle a view or UI element — or change a
+  persisted UserDefaults key — update the matching doc (and the README index /
+  shared-keys table). Adding a new screen means adding a new `.md` file.
+
 ## Code Style Guidelines
 - **Imports**: Import specific frameworks only (Foundation, Cocoa, EonilFSEvents)
 - **Formatting**: Use 4-space indentation, no trailing whitespace
