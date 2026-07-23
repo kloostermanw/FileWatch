@@ -29,6 +29,7 @@
 		AA0100000000000000000001 /* URLProtocolStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000002 /* URLProtocolStub.swift */; };
 		AA0100000000000000000003 /* GitHubReleaseServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */; };
 		AA0100000000000000000005 /* UpdateControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000006 /* UpdateControllerTests.swift */; };
+		AA0100000000000000000007 /* BroadPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000008 /* BroadPathTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		AA0100000000000000000002 /* URLProtocolStub.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLProtocolStub.swift; sourceTree = "<group>"; };
 		AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GitHubReleaseServiceTests.swift; sourceTree = "<group>"; };
 		AA0100000000000000000006 /* UpdateControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateControllerTests.swift; sourceTree = "<group>"; };
+		AA0100000000000000000008 /* BroadPathTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BroadPathTests.swift; sourceTree = "<group>"; };
 		8441AD96C999AF6252A37A7E /* ReleaseChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReleaseChecking.swift; sourceTree = "<group>"; };
 		ABBA395B954BA774030DB43E /* UpdateAlertPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateAlertPresenter.swift; sourceTree = "<group>"; };
 		BCAF6DCADED36BECEAB690A2 /* GitHubReleaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GitHubReleaseTests.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				AA0100000000000000000002 /* URLProtocolStub.swift */,
 				AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */,
 				AA0100000000000000000006 /* UpdateControllerTests.swift */,
+				AA0100000000000000000008 /* BroadPathTests.swift */,
 			);
 			path = FileWatchTests;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				AA0100000000000000000001 /* URLProtocolStub.swift in Sources */,
 				AA0100000000000000000003 /* GitHubReleaseServiceTests.swift in Sources */,
 				AA0100000000000000000005 /* UpdateControllerTests.swift in Sources */,
+				AA0100000000000000000007 /* BroadPathTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

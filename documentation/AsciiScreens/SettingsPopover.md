@@ -4,58 +4,80 @@ Reached from **Menu → Settings**. Lets the user manage the list of watched
 directories and edit the `local`/`remote` path mapping used to rewrite
 file paths in log messages.
 
+> The whole view is built **programmatically** in `ViewController.loadView()`
+> (like `MessageViewController`). The `Main.storyboard` "ViewController" scene
+> exists only so `AppDelegate.showSettings` can instantiate it by identifier;
+> its storyboard view tree is not used.
+
 ## ASCII
 
 ```
+        MONITORED FOLDERS                       4 folders · 3 active   <- summaryLabel
         ┌──────────────────────────────────────────────────────┐
-        │ ☑  …/wiebe/repos/celery-web-app/src/logs/     0   🗑  │  } directoryTableView
-        │ ☑  …/repos/celery-web-api/src/storage/logs/   0   🗑  │  } (one CustomTableCell
-        │ ☑  …/celery-control-panel/src/storage/logs/   0   🗑  │  }  per row, prototype
-        │ ☑  …e/repos/celery-web-app-dev1/src/logs/     0   🗑  │  }  id "userCell")
-        ├──────────────────────────────────────────────────────┤
-        │              Add directory to monitor                 │  -> AddButton
-        ├──────────────────────────────────────────────────────┤
-        │ local                                                 │
-        │ ┌──────────────────────────────────────────────────┐ │
-        │ │ local                                            │ │  <- `local` field
-        │ └──────────────────────────────────────────────────┘ │
-        │ remote                                                │
-        │ ┌──────────────────────────────────────────────────┐ │
-        │ │ remote                                  ┌────────┐│ │  <- `remote` field
-        │ └─────────────────────────────────────────│  Save  ││ │  -> SaveMapping
-        │                                           └────────┘│ │
+        │ ☑  📁 celery-web-app                    ( 12 )   🗑    │  } directoryTableView
+        │ ☑  📁 celery-web-api                    (  0 )   🗑    │  } (one DirectoryRowView
+        │ ☑  📁 celery-control-panel              (  3 )   🗑    │  }  per row)
+        │ ☐  📁 celery-web-app-dev1  (dimmed)     (  —  )  🗑    │  }
+        │      …/wiebe/repos/celery-web-app-dev1/src/logs/       │
         └──────────────────────────────────────────────────────┘
+        ┌──────────────────────────────────────────────────────┐
+        │  +  Add folder to monitor…                            │  -> addDirectory
+        └──────────────────────────────────────────────────────┘
+        ────────────────────────────────────────────────────────
+        PATH MAPPING
+        Log messages reference paths on the remote server. FileWatch
+        rewrites the remote prefix to your local checkout …            <- help text
 
-Per-row cell (CustomTableCell):
-   ☑           <checkbox>          <count>      🗑
-   enableCheckBox  DirectoryLabel  countLabel   <trash button>
-   -> checkIssue                                -> delIssue
+        Remote path prefix
+        ┌──────────────────────────────────────────────────────┐
+        │ FROM  /var/www/vhosts/application/src                 │  <- remoteField
+        └──────────────────────────────────────────────────────┘
+        Local path prefix
+        ┌──────────────────────────────────────────────────────┐
+        │ TO    /Users/wiebe/repos/celery-web-app/src           │  <- localField
+        └──────────────────────────────────────────────────────┘
+                                     ┌──────────┐ ┌─────────────┐
+                                     │  Cancel  │ │ Save mapping│  -> cancel / saveMapping
+                                     └──────────┘ └─────────────┘
+
+Per-row cell (DirectoryRowView):
+   ☑            📁          <name>              (count)   🗑
+   checkbox   folderIcon  nameLabel/pathLabel   pill      trash
+   -> toggleEnabled                                       -> deleteRow
 ```
 
 ## Source
 
 - **Controller:** `FileWatch/ViewController.swift` — class `ViewController`
   (`NSViewController`, `NSTableViewDelegate`, `NSTableViewDataSource`).
-- **Row cell:** `FileWatch/CustomTableCell.swift` — class `CustomTableCell`
-  (`NSTableCellView`), prototype identifier `userCell`.
-- **Layout:** `FileWatch/Base.lproj/Main.storyboard` — scene instantiated
-  by identifier `ViewController`.
+- **Row cell:** `DirectoryRowView` (`NSTableCellView`, identifier
+  `"DirectoryRowView"`) — in the same file.
+- **Support views (same file):** `PillView` (activity badge),
+  `HoverTintButton` (hover-reddening trash), `AppearanceForwardingView`
+  (root view; forwards light/dark changes), `SettingsPalette` (dynamic
+  light/dark chrome colors).
 - **Monitoring side-effects:** `FileWatch/DirectoryMonitor.swift`.
+- **Opened by:** `AppDelegate.showSettings` (sets `vc.popover`).
 
 ## Elements
 
 | Element | Symbol | Backing data / action |
 |---------|--------|-----------------------|
-| Directory table | `directoryTableView` (`NSTableView`) | Rows come from `arrDirectory` (`[[String:String]]`). |
-| Row checkbox | `enableCheckBox` on `CustomTableCell` | Action `@IBAction func checkIssue(_:)` toggles `arrDirectory[row]["enable"]` between `"1"`/`"0"`. |
-| Row path label | `DirectoryLabel` (`NSTextField`) | `arrDirectory[row]["directory"]`; truncates head (`.byTruncatingHead`). |
-| Row count | `countLabel` (`NSTextField`) | `arrDirectory[row]["count"]`. |
-| Row trash button | (storyboard button, id `EeX-nM-Upx`) | Action `@IBAction func delIssue(_:)` removes the row. |
-| "Add directory to monitor" | `@IBAction func AddButton(_:)` | Opens `NSOpenPanel` (directories only), appends a new entry to `arrDirectory`. |
-| "local" field | `local` (`NSTextFieldCell`) | Editable mapping value for the selected row. |
-| "remote" field | `remote` (`NSTextFieldCell`) | Editable mapping value for the selected row. |
-| "Save" button | `@IBAction func SaveMapping(_:)` | Writes `local`/`remote` into `arrDirectory[selectedRow]`. |
-| (selection tracking) | `selectedRow`, `tableViewSelectionDidChange(_:)` | Loads the selected row's `local`/`remote` into the fields. |
+| Summary line | `summaryLabel` (`NSTextField`) | `"<n> folders · <m> active"`, set in `refreshList()`. |
+| Directory table | `directoryTableView` (`NSTableView`) | Rows from `arrDirectory` (`[[String:String]]`), inside a rounded card (`listCard`) whose height is `listHeight`. |
+| Row enable checkbox | `DirectoryRowView.checkbox` | Action `@objc toggleEnabled(_:)` sets `arrDirectory[row]["enable"]` to `"1"`/`"0"`. |
+| Row folder glyph | `DirectoryRowView.folderIcon` | SF Symbol `folder.fill`, accent-tinted; dims when the row is disabled. |
+| Row name | `DirectoryRowView.nameLabel` | Derived repo name via `displayName(for:)`; bold; dims when disabled. |
+| Row path | `DirectoryRowView.pathLabel` | Full path, monospaced, `~`-collapsed, head-truncated so the tail stays visible. |
+| Row activity pill | `DirectoryRowView.pill` (`PillView`) | `arrDirectory[row]["count"]`; accent when `> 0`, grey at `0`, `—` when disabled. |
+| Row trash button | `DirectoryRowView.trash` (`HoverTintButton`) | Action `@objc deleteRow(_:)`; hidden-ish until row hover, turns red on hover. |
+| "Add folder to monitor…" | `@objc addDirectory()` | `NSOpenPanel` (directories only); appends to `arrDirectory` and selects the new row. |
+| Help text | (wrapping `NSTextField`) | Explains the remote→local rewrite. |
+| "Remote path prefix" field | `remoteField` (`NSTextField`) | Editable `remote` value for the selected row (tag `FROM`). |
+| "Local path prefix" field | `localField` (`NSTextField`) | Editable `local` value for the selected row (tag `TO`). |
+| "Cancel" | `@objc cancel()` | Closes the popover without saving the mapping edits. |
+| "Save mapping" | `@objc saveMapping()` | Writes `remote`/`local` into `arrDirectory[selectedRow]`, persists, closes. Default (accent) button. |
+| (selection tracking) | `selectedRow`, `tableViewSelectionDidChange(_:)` → `loadMapping(for:)` | Loads the selected row's `remote`/`local` into the fields. |
 
 ## Data model — `arrDirectory` entry
 
@@ -63,7 +85,7 @@ Each row is a dictionary persisted under UserDefaults key `directory`:
 
 ```
 ["directory": "/abs/path/",   // watched folder
- "count":     "0",            // shown in the count column
+ "count":     "0",            // shown in the activity pill (currently always "0")
  "enable":    "1",            // "1" watched, "0" paused
  "local":     "/",            // local path prefix (link rewriting)
  "remote":    "/"]            // remote path prefix (link rewriting)
@@ -74,22 +96,26 @@ to turn remote server paths in a log line into clickable local paths.
 
 ## Behaviour notes
 
-- Add, delete, checkbox toggle, and Save each call
-  `objUserDefaults?.setValue(arrDirectory, forKey: "directory")` to persist.
-- `checkIssue` and `delIssue` also call `reload()`, which restarts
-  `DirectoryMonitor` with the new set of enabled paths
-  (`setPaths()` → `stop()` → `start()`).
-- `selectedRow` may be `-1` when nothing is selected (e.g. right after a
-  deletion); `tableViewSelectionDidChange` and `SaveMapping` bounds-check
-  it before indexing `arrDirectory` to avoid an index-out-of-range crash.
+- Add, delete, and checkbox toggle each persist immediately
+  (`objUserDefaults?.setValue(arrDirectory, forKey: "directory")`) and call
+  `restartMonitoring()` (`DirectoryMonitor` `setPaths()`→`stop()`→`start()`).
+  **Cancel**/**Save mapping** only affect the mapping fields.
+- `selectedRow` may be `-1` when nothing is selected; `loadMapping` and
+  `saveMapping` bounds-check it before indexing `arrDirectory`.
+- The activity pill is **display-only** — nothing increments `count` today,
+  so it renders `0` for every folder until that is wired up.
+- Chrome colors (`SettingsPalette`) resolve per light/dark; `CALayer` fills
+  are re-tinted via `resolvedCGColor(_:_:)` on layout and on appearance change.
 - The popover is `.transient` — clicking outside closes it.
 
 ## To change something
 
-- **Row layout / add a column:** edit the `userCell` prototype in
-  `Main.storyboard` and the outlets in `CustomTableCell`, then update
-  `tableView(_:viewFor:row:)`.
-- **Change what a button does:** edit the matching `@IBAction` in
-  `ViewController`.
+- **Row layout / add an element:** edit `DirectoryRowView` (init builds the
+  stack; `configure(dict:showTopDivider:)` fills it).
+- **What a control does:** edit the matching `@objc` action in `ViewController`.
+- **Derived folder name:** `DirectoryRowView.displayName(for:)`.
+- **Make the count real:** increment per-folder `count` in
+  `DirectoryMonitor` and refresh the list (out of scope for the visual
+  redesign; see the pill note above).
 - **Change the persisted shape:** update every reader/writer of the
   `directory` key (see the table in [README.md](README.md)).
