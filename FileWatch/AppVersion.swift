@@ -34,6 +34,9 @@ struct AppVersion: Comparable, Equatable, CustomStringConvertible {
         return false
     }
 
+    // `==` is hand-written to match `<` (trailing zeros are equal, so `1.2` == `1.2.0`).
+    // If `Hashable` is ever needed, it must hash a normalized form — synthesized `Hashable`
+    // would hash the raw `components` array and break this invariant.
     static func == (lhs: AppVersion, rhs: AppVersion) -> Bool {
         for i in 0..<max(lhs.components.count, rhs.components.count)
         where lhs.component(at: i) != rhs.component(at: i) {

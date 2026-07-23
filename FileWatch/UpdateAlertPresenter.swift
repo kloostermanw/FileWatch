@@ -8,8 +8,7 @@
 import AppKit
 
 /// Presents update-related `NSAlert`s driven by `UpdateService.State` and performs
-/// the follow-up action the user chooses. The AppKit counterpart to itermplex's
-/// SwiftUI `UpdateAlertModifier`.
+/// the follow-up action the user chooses.
 @MainActor
 enum UpdateAlertPresenter {
     static func present(_ state: UpdateService.State, service: UpdateService) async {
@@ -37,8 +36,8 @@ enum UpdateAlertPresenter {
             info("You are up to date", "FileWatch \(AppVersion.current) is the latest version.")
             service.dismiss()
 
-        case .failed(let message):
-            info("Update check failed", message)
+        case .failed(let title, let message):
+            info(title, message)
             service.dismiss()
 
         case .downloaded:

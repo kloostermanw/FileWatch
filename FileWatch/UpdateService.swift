@@ -20,12 +20,13 @@ final class UpdateService {
         case available(GitHubRelease)
         case downloading
         case downloaded(URL)
-        case failed(message: String)
+        case failed(title: String, message: String)
     }
 
     private(set) var state: State = .idle
 
     private let checker: ReleaseChecking
+    private let session: URLSession
     private let defaults: UserDefaults
     private let currentVersion: AppVersion
     private let throttle: TimeInterval
@@ -38,12 +39,14 @@ final class UpdateService {
 
     init(
         checker: ReleaseChecking = GitHubReleaseService(),
+        session: URLSession = .shared,
         defaults: UserDefaults = .standard,
         currentVersion: AppVersion = .current,
         throttle: TimeInterval = 2 * 60 * 60,
         now: @escaping () -> Date = Date.init
     ) {
         self.checker = checker
+        self.session = session
         self.defaults = defaults
         self.currentVersion = currentVersion
         self.throttle = throttle
@@ -81,7 +84,8 @@ final class UpdateService {
             state = .available(release)
         } catch {
             if userInitiated {
-                state = .failed(message: error.localizedDescription)
+                Self.logger.error("Update check failed: \(error.localizedDescription, privacy: .public)")
+                state = .failed(title: "Update check failed", message: error.localizedDescription)
             } else {
                 Self.logger.error("Background update check failed: \(error.localizedDescription, privacy: .public)")
                 state = .idle
@@ -90,22 +94,28 @@ final class UpdateService {
     }
 
     func download(_ release: GitHubRelease) async {
+        // Only download the release the user was actually shown as available.
+        guard case .available(let available) = state, available == release else {
+            state = .failed(title: "Download failed", message: "No update is available to download.")
+            return
+        }
         guard let asset = release.dmgAsset else {
-            state = .failed(message: "The latest release has no .dmg download.")
+            state = .failed(title: "Download failed", message: "The latest release has no .dmg download.")
             return
         }
         state = .downloading
         do {
-            let stash = try await URLSession.shared.downloadCompat(from: asset.downloadURL)
+            let stash = try await session.downloadCompat(from: asset.downloadURL)
             let downloads = try FileManager.default.url(
                 for: .downloadsDirectory, in: .userDomainMask, appropriateFor: nil, create: true
             )
-            let dest = uniqueDestination(in: downloads, fileName: asset.name)
+            let dest = Self.uniqueDestination(in: downloads, fileName: asset.name)
             try FileManager.default.moveItem(at: stash, to: dest)
             state = .downloaded(dest)
             NSWorkspace.shared.activateFileViewerSelecting([dest])
         } catch {
-            state = .failed(message: error.localizedDescription)
+            Self.logger.error("Download failed: \(error.localizedDescription, privacy: .public)")
+            state = .failed(title: "Download failed", message: error.localizedDescription)
         }
     }
 
@@ -120,7 +130,7 @@ final class UpdateService {
     }
 
     /// Avoids clobbering an existing file by suffixing " (1)", " (2)", etc.
-    private func uniqueDestination(in directory: URL, fileName: String) -> URL {
+    static func uniqueDestination(in directory: URL, fileName: String) -> URL {
         let base = (fileName as NSString).deletingPathExtension
         let ext = (fileName as NSString).pathExtension
         var candidate = directory.appendingPathComponent(fileName)

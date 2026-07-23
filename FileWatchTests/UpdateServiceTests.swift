@@ -38,11 +38,14 @@ private actor SequencedChecker: ReleaseChecking {
     }
 }
 
-private func release(tag: String) -> GitHubRelease {
+private func release(tag: String, hasDmg: Bool = true) -> GitHubRelease {
+    let assets = hasDmg
+        ? #"[{"name": "FileWatch.dmg", "browser_download_url": "https://example.com/FileWatch.dmg"}]"#
+        : "[]"
     let json = """
     {"tag_name": "\(tag)", "name": "\(tag)", "body": "",
      "html_url": "https://github.com/kloostermanw/FileWatch/releases/tag/\(tag)",
-     "assets": [{"name": "FileWatch.dmg", "browser_download_url": "https://example.com/FileWatch.dmg"}]}
+     "assets": \(assets)}
     """
     return try! JSONDecoder().decode(GitHubRelease.self, from: Data(json.utf8))
 }
@@ -155,6 +158,63 @@ private func freshDefaults() -> UserDefaults {
 
         await service.checkForUpdates(userInitiated: true)
         #expect(service.state == .available(release(tag: "v1.1.0")))
+    }
+
+    @Test func downloadWithoutDmgFailsWithDownloadTitle() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0", hasDmg: false))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        await service.download(release(tag: "v1.1.0", hasDmg: false))
+        guard case .failed(let title, let message) = service.state else {
+            Issue.record("expected .failed, got \(service.state)"); return
+        }
+        #expect(title == "Download failed")
+        #expect(message.contains(".dmg"))
+    }
+
+    @Test func downloadWhenNotAvailableFails() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        // state is .idle — no check has run, nothing is available to download.
+        await service.download(release(tag: "v1.1.0"))
+        guard case .failed = service.state else {
+            Issue.record("expected .failed, got \(service.state)"); return
+        }
+    }
+
+    @Test func uniqueDestinationSuffixesOnCollision() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        func create(_ name: String) {
+            FileManager.default.createFile(atPath: dir.appendingPathComponent(name).path, contents: nil)
+        }
+
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch.dmg")
+        create("FileWatch.dmg")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch (1).dmg")
+        create("FileWatch (1).dmg")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch (2).dmg")
+        create("README")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "README").lastPathComponent == "README (1)")
+    }
+
+    @Test func dismissClearsAvailableState() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+        service.dismiss()
+        #expect(service.state == .idle)
     }
 
     @Test func userInitiatedFailureSurfacesButBackgroundStaysIdle() async {
