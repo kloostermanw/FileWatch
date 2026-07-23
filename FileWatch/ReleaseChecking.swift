@@ -7,14 +7,36 @@
 
 import Foundation
 
-/// Errors surfaced by the update pipeline.
-enum UpdateError: LocalizedError {
+/// Errors surfaced by the update pipeline. Each case maps to a distinct failure so the
+/// user-facing message points at the right subsystem — never a synthetic "HTTP -1".
+enum UpdateError: LocalizedError, Equatable {
+    /// GitHub's unauthenticated rate limit (HTTP 403).
+    case rateLimited
+    /// The repo has no published releases yet (HTTP 404 on `releases/latest`).
+    case noReleasesPublished
+    /// Any other non-200 HTTP status, carrying the actual code.
     case badResponse(Int)
+    /// URLSession reported neither an error nor a usable response/body.
+    case emptyResponse
+    /// A download finished without producing a file on disk.
+    case downloadProducedNoFile
+    /// The response was not an `HTTPURLResponse` (e.g. a non-HTTP scheme).
+    case nonHTTPResponse
 
     var errorDescription: String? {
         switch self {
+        case .rateLimited:
+            return "GitHub is rate-limiting update checks. Please try again later."
+        case .noReleasesPublished:
+            return "No releases have been published yet."
         case let .badResponse(code):
             return "GitHub returned an unexpected response (HTTP \(code))."
+        case .emptyResponse:
+            return "The server returned an empty response."
+        case .downloadProducedNoFile:
+            return "The download did not produce a file."
+        case .nonHTTPResponse:
+            return "The server returned an unexpected (non-HTTP) response."
         }
     }
 }
@@ -39,8 +61,12 @@ struct GitHubReleaseService: ReleaseChecking {
         var request = URLRequest(url: url)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         let (data, response) = try await session.dataCompat(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            throw UpdateError.badResponse((response as? HTTPURLResponse)?.statusCode ?? -1)
+        guard let http = response as? HTTPURLResponse else { throw UpdateError.nonHTTPResponse }
+        switch http.statusCode {
+        case 200: break
+        case 403: throw UpdateError.rateLimited
+        case 404: throw UpdateError.noReleasesPublished
+        default: throw UpdateError.badResponse(http.statusCode)
         }
         return try JSONDecoder().decode(GitHubRelease.self, from: data)
     }
@@ -57,7 +83,7 @@ extension URLSession {
                 } else if let data, let response {
                     continuation.resume(returning: (data, response))
                 } else {
-                    continuation.resume(throwing: UpdateError.badResponse(-1))
+                    continuation.resume(throwing: UpdateError.emptyResponse)
                 }
             }
             task.resume()
@@ -68,13 +94,18 @@ extension URLSession {
     /// completion handler returns (the delegate-supplied temp file is deleted after).
     func downloadCompat(from url: URL) async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
-            let task = downloadTask(with: url) { tempURL, _, error in
+            let task = downloadTask(with: url) { tempURL, response, error in
                 if let error {
                     continuation.resume(throwing: error)
                     return
                 }
+                if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                    // Don't stash an error page (e.g. a 403/404 body) as if it were the .dmg.
+                    continuation.resume(throwing: UpdateError.badResponse(http.statusCode))
+                    return
+                }
                 guard let tempURL else {
-                    continuation.resume(throwing: UpdateError.badResponse(-1))
+                    continuation.resume(throwing: UpdateError.downloadProducedNoFile)
                     return
                 }
                 do {

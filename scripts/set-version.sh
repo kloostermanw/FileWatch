@@ -33,4 +33,9 @@ grep -q 'MARKETING_VERSION = ' "$PROJECT" || {
 # Replace every MARKETING_VERSION value (Debug + Release configs).
 /usr/bin/sed -i '' -E "s/(MARKETING_VERSION = )[^;]*(;)/\1${VERSION}\2/g" "$PROJECT"
 
+# sed exits 0 even when it replaces nothing; confirm the value actually took so a
+# release can never be tagged from a commit with a stale MARKETING_VERSION.
+grep -q "MARKETING_VERSION = ${VERSION};" "$PROJECT" || {
+  echo "set-version: replacement did not take; MARKETING_VERSION is not ${VERSION}" >&2; exit 1; }
+
 echo "set-version: MARKETING_VERSION -> ${VERSION}"

@@ -8,7 +8,7 @@ target = master
 # in the Xcode project to the new tag.
 cmd1 = scripts/set-version.sh
 
-# cmd1_arguments belong by cmd1
+# arguments passed to cmd1
 cmd1_arguments = --release {new_release}
 
 # Specify the editor of choice, this will open the editor after the release is created and the cmd1 has run
@@ -25,7 +25,7 @@ cmd1_commit_message = build: sync marketing version to release tag
 # cmd2 = none
 cmd2 = none
 
-# cmd2_arguments belong by cmd2
+# arguments passed to cmd2
 # cmd2_arguments = none
 cmd2_arguments = none
 
@@ -41,5 +41,5 @@ cmd2_commit_message = none
 # Create the GitHub release, build the .dmg, and upload it.
 cmd3 = scripts/publish-release.sh
 
-# cmd3_arguments belong by cmd3
+# arguments passed to cmd3
 cmd3_arguments = --release {new_release}

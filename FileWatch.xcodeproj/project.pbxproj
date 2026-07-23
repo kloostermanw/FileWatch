@@ -26,6 +26,9 @@
 		C7D8F34226151BCE0027726E /* EonilFSEvents in Frameworks */ = {isa = PBXBuildFile; productRef = C7D8F34126151BCE0027726E /* EonilFSEvents */; };
 		E1B4DEFADBDC0A943EFE95A5 /* UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A685B66FD9563C0E6F6BD75 /* UpdateController.swift */; };
 		E7F00AB5A28C72272399DDF1 /* UpdateServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5843E8F5FB7278CB092A4545 /* UpdateServiceTests.swift */; };
+		AA0100000000000000000001 /* URLProtocolStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000002 /* URLProtocolStub.swift */; };
+		AA0100000000000000000003 /* GitHubReleaseServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */; };
+		AA0100000000000000000005 /* UpdateControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000006 /* UpdateControllerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +47,9 @@
 		4102973AD51C81BD8C2187EF /* GitHubRelease.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GitHubRelease.swift; sourceTree = "<group>"; };
 		47005B5C66AAA2BD505E8330 /* AppVersion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		5843E8F5FB7278CB092A4545 /* UpdateServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateServiceTests.swift; sourceTree = "<group>"; };
+		AA0100000000000000000002 /* URLProtocolStub.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLProtocolStub.swift; sourceTree = "<group>"; };
+		AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GitHubReleaseServiceTests.swift; sourceTree = "<group>"; };
+		AA0100000000000000000006 /* UpdateControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateControllerTests.swift; sourceTree = "<group>"; };
 		8441AD96C999AF6252A37A7E /* ReleaseChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReleaseChecking.swift; sourceTree = "<group>"; };
 		ABBA395B954BA774030DB43E /* UpdateAlertPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateAlertPresenter.swift; sourceTree = "<group>"; };
 		BCAF6DCADED36BECEAB690A2 /* GitHubReleaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GitHubReleaseTests.swift; sourceTree = "<group>"; };
@@ -97,6 +103,9 @@
 				F985D00E5375CA7F67F508D8 /* AppVersionTests.swift */,
 				BCAF6DCADED36BECEAB690A2 /* GitHubReleaseTests.swift */,
 				5843E8F5FB7278CB092A4545 /* UpdateServiceTests.swift */,
+				AA0100000000000000000002 /* URLProtocolStub.swift */,
+				AA0100000000000000000004 /* GitHubReleaseServiceTests.swift */,
+				AA0100000000000000000006 /* UpdateControllerTests.swift */,
 			);
 			path = FileWatchTests;
 			sourceTree = "<group>";
@@ -255,6 +264,9 @@
 				794014364F1E2F6CCAD36740 /* AppVersionTests.swift in Sources */,
 				0C2F9E2BDA4D4DD785A1B23E /* GitHubReleaseTests.swift in Sources */,
 				E7F00AB5A28C72272399DDF1 /* UpdateServiceTests.swift in Sources */,
+				AA0100000000000000000001 /* URLProtocolStub.swift in Sources */,
+				AA0100000000000000000003 /* GitHubReleaseServiceTests.swift in Sources */,
+				AA0100000000000000000005 /* UpdateControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

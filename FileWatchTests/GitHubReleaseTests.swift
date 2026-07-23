@@ -36,6 +36,33 @@ import Foundation
         #expect(release.dmgAsset?.downloadURL == URL(string: "https://example.com/FileWatch.dmg"))
     }
 
+    @Test func picksFirstDmgWhenMultiplePresent() throws {
+        let json = """
+        {
+          "tag_name": "v1.0.0", "name": "1.0.0", "body": "",
+          "html_url": "https://github.com/kloostermanw/FileWatch/releases/tag/v1.0.0",
+          "assets": [
+            {"name": "FileWatch-arm64.dmg", "browser_download_url": "https://example.com/arm64.dmg"},
+            {"name": "FileWatch-x86_64.dmg", "browser_download_url": "https://example.com/x86_64.dmg"}
+          ]
+        }
+        """
+        let release = try decode(json)
+        #expect(release.dmgAsset?.name == "FileWatch-arm64.dmg")
+    }
+
+    @Test func matchesDmgExtensionCaseInsensitively() throws {
+        let json = """
+        {
+          "tag_name": "v1.0.0", "name": "1.0.0", "body": "",
+          "html_url": "https://github.com/kloostermanw/FileWatch/releases/tag/v1.0.0",
+          "assets": [{"name": "FileWatch.DMG", "browser_download_url": "https://example.com/FileWatch.DMG"}]
+        }
+        """
+        let release = try decode(json)
+        #expect(release.dmgAsset?.name == "FileWatch.DMG")
+    }
+
     @Test func dmgAssetNilWhenNoDmgPresent() throws {
         let json = """
         {
