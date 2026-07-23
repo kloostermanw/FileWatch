@@ -34,12 +34,18 @@ xcodebuild \
 APP_PATH="$DERIVED/Build/Products/Release/$APP_NAME.app"
 [ -d "$APP_PATH" ] || { echo "build failed: $APP_PATH missing" >&2; exit 1; }
 
+SIGNED=0
 if [ -n "${DEVELOPER_ID_APP:-}" ]; then
   echo "==> Code-signing $APP_NAME.app (hardened runtime) as: $DEVELOPER_ID_APP"
-  codesign --force --deep --options runtime --timestamp \
-    ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \
-    --sign "$DEVELOPER_ID_APP" "$APP_PATH"
-  codesign --verify --strict --verbose=2 "$APP_PATH"
+  if codesign --force --deep --options runtime --timestamp \
+       ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \
+       --sign "$DEVELOPER_ID_APP" "$APP_PATH" \
+     && codesign --verify --strict --verbose=2 "$APP_PATH"; then
+    SIGNED=1
+  else
+    echo "==> WARNING: code-signing failed — identity \"$DEVELOPER_ID_APP\" not available in the keychain." >&2
+    echo "    Continuing with an UNSIGNED app; the .dmg will be blocked by Gatekeeper on other Macs." >&2
+  fi
 else
   echo "==> WARNING: DEVELOPER_ID_APP not set — the app is UNSIGNED." >&2
   echo "    The resulting .dmg will be blocked by Gatekeeper on other Macs." >&2
@@ -61,7 +67,7 @@ hdiutil create \
   -ov \
   "$DMG_OUT" >/dev/null
 
-if [ -n "${DEVELOPER_ID_APP:-}" ]; then
+if [ "$SIGNED" -eq 1 ]; then
   echo "==> Signing $DMG_OUT"
   codesign --force --timestamp --sign "$DEVELOPER_ID_APP" "$DMG_OUT"
 
