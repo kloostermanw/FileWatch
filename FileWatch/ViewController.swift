@@ -64,9 +64,11 @@ class ViewController: NSViewController {
     }
     
     @IBAction func SaveMapping(_ sender: Any) {
+        guard selectedRow >= 0 && selectedRow < arrDirectory.count else { return }
+
         arrDirectory[selectedRow]["local"] = local.title
         arrDirectory[selectedRow]["remote"] = remote.title
-        
+
         objUserDefaults?.setValue(arrDirectory, forKey: "directory")
     }
     
@@ -85,7 +87,16 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         let table = notification.object as! NSTableView
-        selectedRow = table.selectedRow;
+        selectedRow = table.selectedRow
+
+        // selectedRow is -1 when nothing is selected (e.g. after the selected
+        // row is deleted); guard against an out-of-range index into arrDirectory.
+        guard selectedRow >= 0 && selectedRow < arrDirectory.count else {
+            local.title = "local"
+            remote.title = "remote"
+            return
+        }
+
         local.title = arrDirectory[selectedRow]["local"] ?? "local"
         remote.title = arrDirectory[selectedRow]["remote"] ?? "remote"
     }

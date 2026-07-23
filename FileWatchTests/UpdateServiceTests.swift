@@ -1,0 +1,237 @@
+//
+//  UpdateServiceTests.swift
+//  FileWatchTests
+//
+//  Created by Wiebe Kloosterman on 21/07/2026.
+//
+
+import Testing
+import Foundation
+@testable import FileWatch
+
+private struct StubChecker: ReleaseChecking {
+    let result: Result<GitHubRelease, any Error>
+    func latestRelease() async throws -> GitHubRelease { try result.get() }
+}
+
+private struct ExplodingChecker: ReleaseChecking {
+    func latestRelease() async throws -> GitHubRelease {
+        Issue.record("checker should not be called")
+        throw UpdateError.badResponse(-1)
+    }
+}
+
+/// Returns a different result on each successive call, so a test can tell whether a
+/// second `checkForUpdates` actually reached the network call or was short-circuited
+/// before it.
+private actor SequencedChecker: ReleaseChecking {
+    private var calls = 0
+    private let results: [Result<GitHubRelease, any Error>]
+
+    init(_ results: [Result<GitHubRelease, any Error>]) {
+        self.results = results
+    }
+
+    func latestRelease() async throws -> GitHubRelease {
+        defer { calls += 1 }
+        return try results[min(calls, results.count - 1)].get()
+    }
+}
+
+private func release(tag: String, hasDmg: Bool = true) -> GitHubRelease {
+    let assets = hasDmg
+        ? #"[{"name": "FileWatch.dmg", "browser_download_url": "https://example.com/FileWatch.dmg"}]"#
+        : "[]"
+    let json = """
+    {"tag_name": "\(tag)", "name": "\(tag)", "body": "",
+     "html_url": "https://github.com/kloostermanw/FileWatch/releases/tag/\(tag)",
+     "assets": \(assets)}
+    """
+    return try! JSONDecoder().decode(GitHubRelease.self, from: Data(json.utf8))
+}
+
+private func freshDefaults() -> UserDefaults {
+    let suite = "UpdateServiceTests-\(UUID().uuidString)"
+    return UserDefaults(suiteName: suite)!
+}
+
+@MainActor
+@Suite struct UpdateServiceTests {
+    @Test func reportsAvailableWhenReleaseNewer() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+    }
+
+    @Test func reportsUpToDateWhenNotNewer() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.0.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .upToDate)
+    }
+
+    @Test func backgroundCheckStaysIdleWhenNotNewer() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.0.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: false)
+        #expect(service.state == .idle)
+    }
+
+    @Test func backgroundCheckDoesNotDisturbAvailableState() async {
+        let defaults = freshDefaults()
+        let now = Date(timeIntervalSince1970: 10_000)
+        // A second, distinct release result stands in for "what the network would say if
+        // the background check actually ran": if the active-state guard didn't short-circuit
+        // it, this result (not newer than currentVersion) would flip state to .idle. throttle
+        // is 0 and `now` is fixed so the pre-existing throttle check can't be what blocks the
+        // second call instead of the guard.
+        let checker = SequencedChecker([
+            .success(release(tag: "v1.1.0")),
+            .success(release(tag: "v1.0.0"))
+        ])
+        let service = UpdateService(
+            checker: checker,
+            defaults: defaults,
+            currentVersion: AppVersion("1.0.0"),
+            throttle: 0,
+            now: { now }
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+
+        await service.checkForUpdates(userInitiated: false)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+    }
+
+    @Test func backgroundCheckThrottled() async {
+        let defaults = freshDefaults()
+        let now = Date(timeIntervalSince1970: 10_000)
+        defaults.set(now.addingTimeInterval(-60), forKey: "UpdateService.lastCheck")
+        let service = UpdateService(
+            checker: ExplodingChecker(),
+            defaults: defaults,
+            currentVersion: AppVersion("1.0.0"),
+            throttle: 7200,
+            now: { now }
+        )
+        await service.checkForUpdates(userInitiated: false)
+        #expect(service.state == .idle)
+    }
+
+    @Test func userInitiatedIgnoresThrottle() async {
+        let defaults = freshDefaults()
+        let now = Date(timeIntervalSince1970: 10_000)
+        defaults.set(now.addingTimeInterval(-60), forKey: "UpdateService.lastCheck")
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v2.0.0"))),
+            defaults: defaults,
+            currentVersion: AppVersion("1.0.0"),
+            throttle: 7200,
+            now: { now }
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v2.0.0")))
+    }
+
+    @Test func skippedVersionSuppressedInBackgroundButShownWhenManual() async {
+        let defaults = freshDefaults()
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: defaults,
+            currentVersion: AppVersion("1.0.0")
+        )
+        service.skip(release(tag: "v1.1.0"))
+        #expect(service.state == .idle)
+
+        await service.checkForUpdates(userInitiated: false)
+        #expect(service.state == .idle)
+
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+    }
+
+    @Test func downloadWithoutDmgFailsWithDownloadTitle() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0", hasDmg: false))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        await service.download(release(tag: "v1.1.0", hasDmg: false))
+        guard case .failed(let title, let message) = service.state else {
+            Issue.record("expected .failed, got \(service.state)"); return
+        }
+        #expect(title == "Download failed")
+        #expect(message.contains(".dmg"))
+    }
+
+    @Test func downloadWhenNotAvailableFails() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        // state is .idle — no check has run, nothing is available to download.
+        await service.download(release(tag: "v1.1.0"))
+        guard case .failed = service.state else {
+            Issue.record("expected .failed, got \(service.state)"); return
+        }
+    }
+
+    @Test func uniqueDestinationSuffixesOnCollision() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        func create(_ name: String) {
+            FileManager.default.createFile(atPath: dir.appendingPathComponent(name).path, contents: nil)
+        }
+
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch.dmg")
+        create("FileWatch.dmg")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch (1).dmg")
+        create("FileWatch (1).dmg")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "FileWatch.dmg").lastPathComponent == "FileWatch (2).dmg")
+        create("README")
+        #expect(UpdateService.uniqueDestination(in: dir, fileName: "README").lastPathComponent == "README (1)")
+    }
+
+    @Test func dismissClearsAvailableState() async {
+        let service = UpdateService(
+            checker: StubChecker(result: .success(release(tag: "v1.1.0"))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await service.checkForUpdates(userInitiated: true)
+        #expect(service.state == .available(release(tag: "v1.1.0")))
+        service.dismiss()
+        #expect(service.state == .idle)
+    }
+
+    @Test func userInitiatedFailureSurfacesButBackgroundStaysIdle() async {
+        let failing = UpdateService(
+            checker: StubChecker(result: .failure(UpdateError.badResponse(500))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await failing.checkForUpdates(userInitiated: true)
+        if case .failed = failing.state {} else { Issue.record("expected .failed, got \(failing.state)") }
+
+        let silent = UpdateService(
+            checker: StubChecker(result: .failure(UpdateError.badResponse(500))),
+            defaults: freshDefaults(),
+            currentVersion: AppVersion("1.0.0")
+        )
+        await silent.checkForUpdates(userInitiated: false)
+        #expect(silent.state == .idle)
+    }
+}

@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+
+# Release build artifacts (scripts/make-dmg.sh, scripts/publish-release.sh)
+build-release/
+*.dmg
